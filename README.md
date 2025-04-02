@@ -55,11 +55,19 @@ python main.py
 
 3. Add to Cursor's MCP Servers or Claude's MCP Servers
 
+You may need to put the full path to the uv executable in the command field. You can get this by running `which uv` on MacOS/Linux or `where uv` on Windows.
+
 ```json
 {
   "mcpServers": {
     "Crawl4AI": {
-      "url": "http://localhost:8000/sse"
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/ABSOLUTE/PATH/TO/PARENT/FOLDER/crawl4ai-mcp",
+        "run",
+        "main.py"
+      ]
     }
   }
 }
