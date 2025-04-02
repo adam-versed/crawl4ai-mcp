@@ -46,6 +46,7 @@ async def scrape_url(url: str) -> List[Any]:
             browser_type="chromium",
             headless=True,
             ignore_https_errors=True,
+            verbose=False,
             extra_args=[
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
@@ -54,7 +55,7 @@ async def scrape_url(url: str) -> List[Any]:
         )
         run_config = CrawlerRunConfig(
             cache_mode=CacheMode.BYPASS,
-            verbose=True,
+            verbose=False,
             page_timeout=30 * 1000,  # Convert to milliseconds
         )
 

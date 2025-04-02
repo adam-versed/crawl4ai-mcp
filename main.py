@@ -24,5 +24,4 @@ async def scrape_webpage(
 
 if __name__ == "__main__":
     # Initialize and run the server
-    mcp.run(transport="sse")
-    # mcp.run(transport="stdio")  # for testing
+    mcp.run(transport="stdio")
