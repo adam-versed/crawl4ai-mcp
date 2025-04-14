@@ -12,3 +12,4 @@ dependencies = [
 
 [tool.uv.sources]
 crawl4ai = { git = "https://github.com/unclecode/crawl4ai.git", rev = "2025-MAR-ALPHA-1" }
+# We need the above for the bug-fixes done in the crawl4ai-mcp branch

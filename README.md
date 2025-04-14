@@ -9,6 +9,7 @@ Python 3.10 or higher installed.
 ## Current Features
 
 - Single page scraping
+- Website crawling
 
 ## Installation
 
@@ -72,3 +73,22 @@ You may need to put the full path to the uv executable in the command field. You
   }
 }
 ```
+
+## Tools Provided
+
+This MCP server exposes the following tools to the LLM:
+
+1.  **`scrape_webpage(url: str)`**
+
+    - **Description:** Scrapes the content and metadata from a single webpage using Crawl4AI.
+    - **Parameters:**
+      - `url` (string, required): The URL of the webpage to scrape.
+    - **Returns:** A list containing a `TextContent` object with the scraped content (primarily markdown) as JSON.
+
+2.  **`crawl_website(url: str, crawl_depth: int = 1, max_pages: int = 5)`**
+    - **Description:** Crawls a website starting from the given URL up to a specified depth and page limit using Crawl4AI.
+    - **Parameters:**
+      - `url` (string, required): The starting URL to crawl.
+      - `crawl_depth` (integer, optional, default: 1): The maximum depth to crawl relative to the starting URL.
+      - `max_pages` (integer, optional, default: 5): The maximum number of pages to scrape during the crawl.
+    - **Returns:** A list containing a `TextContent` object with a JSON array of results for the crawled pages (including URL, success status, markdown content, or error).
