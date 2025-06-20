@@ -3,6 +3,7 @@ import logging
 import uuid
 from typing import Dict, Optional
 from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig, CacheMode
+from .config import get_config
 
 logger = logging.getLogger(__name__)
 
@@ -14,13 +15,14 @@ class SessionManager:
         self._crawler: Optional[AsyncWebCrawler] = None
         self._sessions: Dict[str, bool] = {}  # session_id -> is_active
         self._lock = asyncio.Lock()
+        self._config = get_config()
         
     async def get_crawler(self) -> AsyncWebCrawler:
         """Get or create the main crawler instance."""
         async with self._lock:
             if self._crawler is None:
                 browser_config = BrowserConfig(
-                    headless=True,
+                    headless=self._config.crawler_settings.headless,
                     verbose=False,
                     # Enhanced browser configuration for stability
                     extra_args=[
@@ -62,13 +64,13 @@ class SessionManager:
         config = CrawlerRunConfig(
             session_id=session_id,
             cache_mode=CacheMode.BYPASS,  # Always bypass cache
-            page_timeout=30000,  # Reasonable timeout
+            page_timeout=self._config.crawler_settings.page_timeout_ms,
             verbose=False,
             # Additional settings to prevent caching
             wait_until="domcontentloaded",
             delay_before_return_html=0.5,
             # Force fresh page load - but don't use aggressive settings that break sessions
-            magic=True,  # Enable magic mode for better content extraction
+            magic=self._config.crawler_settings.magic_mode,  # Enable magic mode for better content extraction
         )
         
         logger.info(f"Created new session: {session_id}")
@@ -86,11 +88,13 @@ class SessionManager:
         """Clean up inactive sessions periodically."""
         async with self._lock:
             # Only clean up if we have too many sessions
-            if len(self._sessions) > 20:  # Higher threshold
+            if len(self._sessions) > self._config.crawler_settings.max_concurrent_sessions:
                 inactive_sessions = [sid for sid, active in self._sessions.items() if not active]
                 
                 # Clean up oldest inactive sessions, keep some buffer
-                sessions_to_cleanup = inactive_sessions[:-10] if len(inactive_sessions) > 10 else []
+                cleanup_threshold = self._config.crawler_settings.session_cleanup_threshold
+                cleanup_buffer = self._config.crawler_settings.session_cleanup_buffer
+                sessions_to_cleanup = inactive_sessions[:-cleanup_buffer] if len(inactive_sessions) > cleanup_threshold else []
                 
                 for session_id in sessions_to_cleanup:
                     try:
