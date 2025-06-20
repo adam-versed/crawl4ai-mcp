@@ -2,9 +2,21 @@ import mcp.types as types
 from mcp.server.fastmcp import FastMCP
 from tools.scrape import scrape_url
 from tools.crawl import crawl_website_async
+from tools.session_manager import cleanup_on_exit
+import logging
+import atexit
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 # Initialize FastMCP server
 mcp = FastMCP("crawl4ai")
+
+# Register cleanup function
+atexit.register(lambda: cleanup_on_exit())
 
 
 @mcp.tool()

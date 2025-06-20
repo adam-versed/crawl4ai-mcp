@@ -3,13 +3,13 @@ name = "crawl4ai-mcp"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
-    "crawl4ai>=0.5.0.post8",
+    "crawl4ai>=0.4.0",
     "httpx>=0.28.1",
     "mcp[cli]>=1.6.0",
 ]
 
 [tool.uv.sources]
-crawl4ai = { git = "https://github.com/unclecode/crawl4ai.git", rev = "2025-MAR-ALPHA-1" }
-# We need the above for the bug-fixes done in the crawl4ai-mcp branch
+# Temporarily use PyPI version to avoid git source compilation issues
+# crawl4ai = { git = "https://github.com/unclecode/crawl4ai.git", rev = "2025-MAR-ALPHA-1" }
