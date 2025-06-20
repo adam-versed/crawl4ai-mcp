@@ -259,41 +259,6 @@ Provide your analysis as a JSON object."""
                 "matches_query": False,
                 "parsing_error": True
             }
-    
-    async def extract_insights(
-        self,
-        content: str,
-        focus_areas: List[str],
-        max_tokens: int = 600
-    ) -> str:
-        """Extract key insights from content using LLM.
-        
-        Args:
-            content: Content to analyse
-            focus_areas: List of areas to focus on
-            max_tokens: Maximum tokens in response
-            
-        Returns:
-            Extracted insights
-        """
-        system_prompt = "You are an expert analyst who extracts key insights from content."
-        
-        focus_str = ", ".join(focus_areas) if focus_areas else "general insights"
-        prompt = f"""Extract key insights from the following content, focusing on: {focus_str}
-
-Content to analyse:
-{content}
-
-Provide clear, actionable insights organised by topic."""
-        
-        messages = [{"role": "user", "content": prompt}]
-        
-        return await self.request_llm_completion(
-            messages=messages,
-            max_tokens=max_tokens,
-            system_prompt=system_prompt,
-            temperature=0.4
-        )
 
 
 # Global sampler instance (to be initialised with server)
@@ -326,50 +291,4 @@ def get_sampler() -> MCPSampler:
     """
     if _sampler is None:
         raise RuntimeError("MCP sampler not initialised. Call initialise_sampler() first.")
-    return _sampler
-
-
-async def analyse_content_relevance_async(
-    content: str,
-    query: str,
-) -> List[types.TextContent]:
-    """
-    Analyse how relevant content is to a specific query using LLM analysis.
-
-    Args:
-        content: The content to analyse for relevance
-        query: The query to check relevance against
-
-    Returns:
-        List containing TextContent with relevance analysis as JSON.
-    """
-    try:
-        sampler = get_sampler()
-        analysis = await sampler.analyse_relevance(
-            content=content,
-            query=query,
-            max_tokens=400
-        )
-        
-        response_data = {
-            "success": True,
-            "query": query,
-            "content_length": len(content),
-            "analysis": analysis
-        }
-        
-        return [types.TextContent(
-            type="text",
-            text=json.dumps(response_data, indent=2, ensure_ascii=False)
-        )]
-        
-    except Exception as e:
-        return [types.TextContent(
-            type="text",
-            text=json.dumps({
-                "success": False,
-                "query": query,
-                "error": f"Relevance analysis failed: {str(e)}",
-                "error_type": type(e).__name__
-            }, indent=2)
-        )] 
+    return _sampler 

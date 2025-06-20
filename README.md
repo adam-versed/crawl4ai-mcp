@@ -1,6 +1,6 @@
 # Crawl4AI MCP Server
 
-A comprehensive Model Context Protocol (MCP) server implementation that provides both basic and advanced web crawling capabilities for Cursor AI and Claude Desktop's agent mode. Built on Crawl4AI, it offers everything from simple webpage scraping to sophisticated LLM-driven intelligent research tools.
+A comprehensive Model Context Protocol (MCP) server implementation that provides both basic and advanced web crawling capabilities for Cursor AI and Claude Desktop's agent mode. Built on Crawl4AI, it offers everything from simple webpage scraping to sophisticated LLM-driven intelligent crawling tools.
 
 ## 🚀 Features
 
@@ -15,9 +15,6 @@ A comprehensive Model Context Protocol (MCP) server implementation that provides
 ### Advanced LLM-Enhanced Capabilities (Optional)
 
 - **Intelligent Web Crawling**: LLM-driven adaptive crawling with relevance scoring
-- **Smart Summarisation**: Token-aware content summarisation with focus areas
-- **Content Analysis**: Advanced relevance analysis and key insight extraction
-- **Research Tools**: Comprehensive topic research with structured findings
 - **Adaptive Link Selection**: AI-powered link prioritisation based on content relevance
 - **Diminishing Returns Detection**: Automatic crawl termination when value decreases
 - **Budget Management**: Multi-dimensional resource control (pages, tokens, time, depth)
@@ -26,7 +23,6 @@ A comprehensive Model Context Protocol (MCP) server implementation that provides
 
 ### System Features
 
-- **Performance Monitoring**: Real-time system diagnostics and health assessment
 - **Advanced Caching**: LRU cache with TTL support for optimal performance
 - **Error Resilience**: Comprehensive error handling with fallback strategies
 - **Flexible Configuration**: Environment-based configuration management
@@ -145,7 +141,7 @@ ERROR_RETRY_DELAY=2.0
 
 ## 🔧 Available Tools
 
-The server provides 9 comprehensive MCP tools, ranging from basic web scraping (no LLM required) to advanced AI-powered research capabilities:
+The server provides 3 comprehensive MCP tools, ranging from basic web scraping (no LLM required) to advanced AI-powered crawling capabilities:
 
 ## Basic Tools (No LLM Required)
 
@@ -201,425 +197,174 @@ crawl_website(
 crawl_website(
     url="https://docs.python.org",
     crawl_depth=2,
-    max_pages=10,
-    query="async programming tutorials"
+    max_pages=15,
+    query="async programming"
 )
 ```
 
-## Advanced LLM-Enhanced Tools
+## Advanced Tools (LLM-Enhanced)
 
-### 3. Adaptive Intelligent Crawling
+### 3. Adaptive Website Crawling
 
 #### `adaptive_crawl_website(url: str, query: str, max_budget: int = 20)`
 
-**Most Advanced**: LLM-driven crawling with intelligent link selection and relevance scoring.
+**LLM-Powered Intelligent Crawling**: This is the most sophisticated tool, using AI to make intelligent decisions about which pages to crawl based on relevance to your query.
+
+**Key Features:**
+
+- **Relevance Scoring**: Each page gets an AI-calculated relevance score (0.0-1.0)
+- **Diminishing Returns Detection**: Automatically stops when value decreases
+- **Link Prioritisation**: AI selects the most promising links to follow
+- **Budget Management**: Smart resource allocation across multiple dimensions
+- **Topic Discovery**: Automatic categorisation and topic extraction
 
 **Example:**
 
 ```python
 adaptive_crawl_website(
-    url="https://machinelearning.com",
-    query="transformer architecture and attention mechanisms",
+    url="https://arxiv.org",
+    query="machine learning transformers attention mechanisms",
+    max_budget=25
+)
+```
+
+**Response includes:**
+
+- All crawled pages with relevance scores
+- LLM evaluation and decision rationale
+- Topic categorisation and insights
+- Crawling efficiency metrics
+- Budget utilisation breakdown
+
+## 🎯 Use Cases and Examples
+
+### Simple Content Extraction
+
+```python
+# Extract content from a blog post
+result = scrape_webpage("https://blog.example.com/ai-trends-2024")
+```
+
+### Documentation Crawling
+
+```python
+# Crawl technical documentation
+crawl_website(
+    url="https://fastapi.tiangolo.com",
+    crawl_depth=3,
+    max_pages=25,
+    query="authentication middleware"
+)
+```
+
+### AI-Powered Research
+
+```python
+# Intelligent research on a specific topic
+adaptive_crawl_website(
+    url="https://paperswithcode.com",
+    query="computer vision object detection YOLO architectures",
     max_budget=30
 )
 ```
 
-**Key Features:**
+## 📊 Performance and Limitations
 
-- AI-powered link prioritisation
-- Automatic relevance scoring
-- Diminishing returns detection
-- Budget-aware crawling
-- Context-driven decisions
+### Performance Characteristics
 
-### 4. Content Summarisation
+- **Basic Scraping**: ~1-3 seconds per page
+- **Standard Crawling**: Scales linearly with page count
+- **Adaptive Crawling**: ~2-5 seconds per page (includes LLM analysis)
+- **Memory Usage**: ~50-200MB for typical crawling sessions
+- **Concurrent Requests**: Configurable, defaults to respectful crawling
 
-#### `summarise_webpage(url: str, max_tokens: int = 500, focus: str = "")`
+### Rate Limiting and Respect
 
-**LLM-Powered**: Scrapes and intelligently summarises webpage content with token management and focus areas.
+- Built-in delays between requests (configurable)
+- Respects robots.txt files
+- Implements exponential backoff for failed requests
+- User-agent identification for transparency
 
-**Example:**
+### Current Limitations
 
-```python
-summarise_webpage(
-    url="https://research-paper.com/article",
-    max_tokens=300,
-    focus="key findings and methodology"
-)
+- **JavaScript-Heavy Sites**: May miss dynamically loaded content
+- **Authentication**: No support for login-required pages
+- **Large Files**: Not optimised for documents >10MB
+- **Real-time Updates**: No websocket or streaming support
+
+## 🔧 Configuration Options
+
+### Basic Configuration
+
+```env
+# Crawling behaviour
+CRAWLING_DEFAULT_MAX_PAGES=20
+CRAWLING_DEFAULT_DEPTH=3
+CRAWLING_REQUEST_DELAY=1.0
+
+# Performance tuning
+CACHE_MAX_SIZE=1000
+CACHE_TTL_SECONDS=3600
 ```
 
-#### `summarise_crawl_results_tool(crawl_results: str, query: str = "", include_page_summaries: bool = True)`
+### Advanced Configuration
 
-**LLM-Powered**: Summarises crawl results with query focus and individual page summaries.
+```env
+# Token management (for content processing)
+TOKEN_SUMMARISATION_INPUT=8000
+TOKEN_SUMMARISATION_OUTPUT=500
+TOKEN_RELEVANCE_ANALYSIS=4000
 
-### 5. Content Analysis
+# Error handling
+ERROR_MAX_RETRIES=3
+ERROR_RETRY_DELAY=2.0
 
-#### `analyse_content_relevance(content: str, query: str)`
-
-**LLM-Powered**: Uses advanced LLM analysis to score content relevance against a specific query.
-
-**Example:**
-
-```python
-analyse_content_relevance(
-    content="Article about machine learning techniques...",
-    query="deep learning neural networks"
-)
+# Cache behaviour
+CACHE_ENABLE_RELEVANCE_CACHE=true
+CACHE_ENABLE_SUMMARY_CACHE=true
+CACHE_ENABLE_CONTENT_DEDUPLICATION=true
 ```
 
-#### `extract_key_insights_tool(content: str, focus_areas: list[str] = [], max_tokens: int = 600)`
+## 🧪 Development and Testing
 
-**LLM-Powered**: Extracts key insights from content with optional focus areas using intelligent analysis.
-
-**Example:**
-
-```python
-extract_key_insights_tool(
-    content="Research paper content...",
-    focus_areas=["methodology", "results", "conclusions"],
-    max_tokens=400
-)
-```
-
-### 6. Research Tools
-
-#### `research_topic(starting_url: str, research_query: str, max_pages: int = 25, depth_strategy: str = "adaptive")`
-
-**Most Comprehensive & LLM-Powered**: Conducts thorough research using intelligent crawling and analysis.
-
-**Example:**
-
-```python
-research_topic(
-    starting_url="https://arxiv.org/list/cs.AI/recent",
-    research_query="recent advances in large language model training efficiency",
-    max_pages=50,
-    depth_strategy="adaptive"
-)
-```
-
-**Response Structure:**
-
-```json
-{
-  "success": true,
-  "research_query": "...",
-  "research_summary": {
-    "total_pages_analysed": 45,
-    "successful_pages": 42,
-    "high_relevance_pages": 15,
-    "average_relevance_score": 0.73,
-    "research_efficiency": 0.85
-  },
-  "key_insights": "Comprehensive analysis of findings...",
-  "high_value_sources": [...],
-  "topic_coverage": [...],
-  "llm_evaluation": {...}
-}
-```
-
-## System Tools
-
-### 7. System Monitoring
-
-#### `system_diagnostics(include_cache_stats: bool = True, include_error_stats: bool = True, include_config_info: bool = False)`
-
-**System Health**: Provides comprehensive system health and performance metrics. Works with or without LLM features.
-
-**Example:**
-
-```python
-system_diagnostics()
-```
-
-## 🤔 Basic vs. LLM-Enhanced Usage
-
-### Basic Usage (No LLM Required)
-
-Perfect for simple web scraping and crawling tasks:
-
-```python
-# Simple page scraping
-scrape_webpage("https://example.com")
-
-# Basic website crawling
-crawl_website("https://docs.python.org", crawl_depth=2, max_pages=10)
-
-# System monitoring
-system_diagnostics()
-```
-
-**Advantages:**
-
-- ✅ Fast and lightweight
-- ✅ No external API dependencies
-- ✅ Reliable and consistent
-- ✅ Perfect for basic data extraction
-
-### LLM-Enhanced Usage (Requires MCP Sampling)
-
-Ideal for intelligent content analysis and research:
-
-```python
-# AI-powered adaptive crawling
-adaptive_crawl_website("https://example.com", "machine learning tutorials", max_budget=20)
-
-# Intelligent content summarisation
-summarise_webpage("https://research-paper.com", focus="key findings")
-
-# Advanced topic research
-research_topic("https://arxiv.org", "quantum computing algorithms", max_pages=30)
-```
-
-**Advantages:**
-
-- ✅ Intelligent content analysis
-- ✅ Adaptive crawling decisions
-- ✅ Relevance-based filtering
-- ✅ Comprehensive research capabilities
-
-## 📊 Advanced Features
-
-### Budget Management
-
-Control resource usage across multiple dimensions:
-
-- **Page Budget**: Maximum pages to crawl
-- **Token Budget**: Maximum LLM tokens to consume
-- **Time Budget**: Maximum processing time
-- **Depth Budget**: Maximum crawl depth
-
-### Intelligent Caching
-
-- **LRU Cache**: Automatic memory management
-- **TTL Support**: Time-based cache expiry
-- **Content Deduplication**: Smart similarity detection
-- **Performance Monitoring**: Real-time cache statistics
-
-### Error Resilience
-
-- **Exponential Backoff**: Smart retry logic
-- **Graceful Degradation**: Fallback to traditional crawling
-- **Session Cleanup**: Automatic resource management
-- **Error Classification**: Intelligent error handling
-
-## 📈 Performance Optimization
-
-### Recommended Settings by Use Case
-
-**Basic Web Scraping (Fast & Lightweight):**
-
-```python
-# Single page scraping
-scrape_webpage("https://example.com")
-
-# Simple multi-page crawling
-crawl_website("https://docs.python.org", crawl_depth=2, max_pages=15)
-```
-
-**Quick Research with LLM (5-10 pages):**
-
-```python
-adaptive_crawl_website(
-    url="starting_url",
-    query="your_query",
-    max_budget=10
-)
-```
-
-**Comprehensive Research (20-50 pages):**
-
-```python
-research_topic(
-    starting_url="starting_url",
-    research_query="detailed_query",
-    max_pages=50,
-    depth_strategy="adaptive"
-)
-```
-
-**Large-Scale Analysis (100+ pages):**
-
-```python
-# Use environment configuration
-# Set higher token limits and cache sizes
-research_topic(
-    starting_url="starting_url",
-    research_query="comprehensive_query",
-    max_pages=200,
-    depth_strategy="adaptive"
-)
-```
-
-## 🧪 Testing
-
-### Run the Test Suite
+### Running Tests
 
 ```bash
 # Install test dependencies
 uv sync --extra test
 
 # Run all tests
-pytest
-
-# Run specific test categories
-pytest -m unit          # Unit tests only
-pytest -m integration   # Integration tests only
-pytest -m performance   # Performance tests only
+python -m pytest
 
 # Run with coverage
-pytest --cov=tools --cov-report=html
+python -m pytest --cov=tools
+
+# Run specific test categories
+python -m pytest tests/test_performance.py
+python -m pytest tests/test_adaptive_crawling.py
 ```
 
-### Test Categories
+### Development Setup
 
-- **Unit Tests**: Core functionality (token counting, utilities)
-- **Integration Tests**: Adaptive crawling, LLM integration
-- **Performance Tests**: Large-scale crawling, resource usage
+```bash
+# Development environment
+uv sync --extra dev
 
-## 🔍 Usage Examples
+# Pre-commit hooks (optional)
+pre-commit install
 
-### Example 1: Academic Research
-
-```python
-# Research a specific academic topic
-research_topic(
-    starting_url="https://scholar.google.com/scholar?q=quantum+computing",
-    research_query="quantum computing algorithms and error correction",
-    max_pages=30,
-    depth_strategy="adaptive"
-)
-```
-
-### Example 2: Technical Documentation Analysis
-
-```python
-# Analyse technical documentation
-adaptive_crawl_website(
-    url="https://kubernetes.io/docs/",
-    query="container orchestration best practices",
-    max_budget=25
-)
-```
-
-### Example 3: Content Summarisation Workflow
-
-```python
-# 1. Crawl relevant pages
-crawl_results = crawl_website(
-    url="https://blog.example.com",
-    query="machine learning tutorials",
-    max_pages=15
-)
-
-# 2. Summarise the results
-summarise_crawl_results_tool(
-    crawl_results=crawl_results,
-    query="machine learning tutorials",
-    include_page_summaries=True
-)
-```
-
-### Example 4: System Health Monitoring
-
-```python
-# Monitor system performance
-system_diagnostics(
-    include_cache_stats=True,
-    include_error_stats=True,
-    include_config_info=True
-)
-```
-
-## 🛡️ Security & Privacy
-
-- **No Data Persistence**: Content is processed in memory only
-- **Session Management**: Automatic cleanup of crawl sessions
-- **Rate Limiting**: Respectful crawling with configurable delays
-- **Error Isolation**: Failures don't affect other operations
-- **Resource Limits**: Configurable bounds on resource usage
-
-## 🔧 Troubleshooting
-
-### Common Issues
-
-**1. MCP Server Not Starting**
-
-- Verify Python 3.12+ is installed
-- Check UV installation: `uv --version`
-- Ensure all dependencies are installed: `uv sync`
-
-**2. Slow Crawling Performance**
-
-- Increase `CRAWLING_REQUEST_DELAY` in configuration
-- Reduce `max_budget` for faster results
-- Check system resources with `system_diagnostics()`
-
-**3. LLM Integration Issues**
-
-- Verify MCP sampling is working
-- Check error logs in system diagnostics
-- Reduce token limits if hitting API limits
-
-**4. Memory Usage**
-
-- Monitor cache statistics
-- Reduce cache sizes in configuration
-- Use smaller `max_budget` values
-
-### Performance Tuning
-
-**For Speed:**
-
-```env
-CRAWLING_REQUEST_DELAY=0.5
-CACHE_MAX_SIZE=500
-TOKEN_SUMMARISATION_INPUT=4000
-```
-
-**For Accuracy:**
-
-```env
-CRAWLING_REQUEST_DELAY=2.0
-CACHE_MAX_SIZE=2000
-TOKEN_SUMMARISATION_INPUT=12000
-```
-
-## 📚 API Reference
-
-### Configuration Options
-
-| Setting                      | Default | Description                        |
-| ---------------------------- | ------- | ---------------------------------- |
-| `CRAWLING_DEFAULT_MAX_PAGES` | `20`    | Default page limit                 |
-| `TOKEN_SUMMARISATION_INPUT`  | `8000`  | Max tokens for summarisation input |
-| `CACHE_MAX_SIZE`             | `1000`  | Maximum cache entries              |
-| `ERROR_MAX_RETRIES`          | `3`     | Maximum retry attempts             |
-
-> **Note**: LLM-related settings (model, temperature, etc.) are not configurable here as they are controlled by your MCP client.
-
-### Response Formats
-
-All tools return JSON responses with consistent structure:
-
-```json
-{
-  "success": true|false,
-  "data": {...},
-  "error": "error message (if applicable)",
-  "metadata": {...}
-}
+# Run linting
+ruff check .
+ruff format .
 ```
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Install development dependencies: `uv sync --extra test`
-4. Run tests: `pytest`
-5. Commit changes: `git commit -m 'Add amazing feature'`
-6. Push to branch: `git push origin feature/amazing-feature`
-7. Open a Pull Request
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make your changes with tests
+4. Run the test suite: `python -m pytest`
+5. Submit a pull request
 
 ## 📄 License
 
@@ -627,10 +372,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🙏 Acknowledgments
 
-- [Crawl4AI](https://github.com/unclecode/crawl4ai) for the core crawling engine
-- [Model Context Protocol](https://modelcontextprotocol.io/) for the MCP framework
-- [tiktoken](https://github.com/openai/tiktoken) for accurate token counting
+- Built on [Crawl4AI](https://github.com/unclecode/crawl4ai) - An excellent web crawling framework
+- Uses [FastMCP](https://github.com/pydantic/fastmcp) for MCP server implementation
+- Inspired by the needs of AI-powered research and content analysis
 
 ---
 
-**Made with ❤️ for intelligent web crawling and research**
+**Note**: This is an independent implementation and is not officially affiliated with Anthropic's MCP specification, though it follows MCP standards for compatibility.

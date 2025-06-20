@@ -23,13 +23,11 @@ class TokenLimits:
     # Input limits (content processing)
     max_input_tokens_summarisation: int = 8000
     max_input_tokens_relevance_analysis: int = 4000
-    max_input_tokens_insight_extraction: int = 6000
     max_input_tokens_llm_decisions: int = 3000
     
     # Output limits (LLM responses)
     max_output_tokens_summary: int = 500
     max_output_tokens_relevance: int = 400
-    max_output_tokens_insights: int = 600
     max_output_tokens_decisions: int = 300
     
     # Batch processing
@@ -43,7 +41,6 @@ class LLMModelConfig:
     # Primary models for different tasks
     summarisation_model: str = "gpt-4"
     relevance_analysis_model: str = "gpt-4"
-    insight_extraction_model: str = "gpt-4"
     crawl_decisions_model: str = "gpt-4"
     topic_extraction_model: str = "gpt-3.5-turbo"  # Lighter task
     
@@ -90,11 +87,6 @@ class BudgetAllocation:
     adaptive_token_budget: int = 20000
     adaptive_time_budget_seconds: int = 600  # 10 minutes
     
-    # Research topic budgets (higher limits)
-    research_page_budget: int = 30
-    research_token_budget: int = 25000
-    research_time_budget_seconds: int = 900  # 15 minutes
-    
     # Budget allocation percentages
     llm_decision_token_percentage: float = 0.3  # 30% for LLM decisions
     content_processing_token_percentage: float = 0.7  # 70% for content processing
@@ -103,6 +95,14 @@ class BudgetAllocation:
     max_absolute_pages: int = 100
     max_absolute_tokens: int = 50000
     max_absolute_time_seconds: int = 1800  # 30 minutes
+    
+    # Performance tracking
+    log_budget_usage: bool = True
+    
+    # Performance monitoring
+    enable_performance_tracking: bool = True
+    track_token_usage: bool = True
+    track_crawl_efficiency: bool = True
 
 
 @dataclass
@@ -225,7 +225,6 @@ class CrawlAIMCPConfig:
         if model_primary := os.getenv("CRAWL4AI_PRIMARY_MODEL"):
             config.llm_models.summarisation_model = model_primary
             config.llm_models.relevance_analysis_model = model_primary
-            config.llm_models.insight_extraction_model = model_primary
             config.llm_models.crawl_decisions_model = model_primary
         
         if model_fallback := os.getenv("CRAWL4AI_FALLBACK_MODEL"):
@@ -264,10 +263,6 @@ class CrawlAIMCPConfig:
                 "input": self.token_limits.max_input_tokens_relevance_analysis,
                 "output": self.token_limits.max_output_tokens_relevance
             },
-            "insight_extraction": {
-                "input": self.token_limits.max_input_tokens_insight_extraction,
-                "output": self.token_limits.max_output_tokens_insights
-            },
             "llm_decisions": {
                 "input": self.token_limits.max_input_tokens_llm_decisions,
                 "output": self.token_limits.max_output_tokens_decisions
@@ -281,7 +276,6 @@ class CrawlAIMCPConfig:
         task_models = {
             "summarisation": self.llm_models.summarisation_model,
             "relevance_analysis": self.llm_models.relevance_analysis_model,
-            "insight_extraction": self.llm_models.insight_extraction_model,
             "crawl_decisions": self.llm_models.crawl_decisions_model,
             "topic_extraction": self.llm_models.topic_extraction_model
         }
@@ -295,12 +289,6 @@ class CrawlAIMCPConfig:
                 "pages": self.budget_allocation.adaptive_page_budget,
                 "tokens": self.budget_allocation.adaptive_token_budget,
                 "time_seconds": self.budget_allocation.adaptive_time_budget_seconds
-            }
-        elif operation == "research_topic":
-            return {
-                "pages": self.budget_allocation.research_page_budget,
-                "tokens": self.budget_allocation.research_token_budget,
-                "time_seconds": self.budget_allocation.research_time_budget_seconds
             }
         else:  # default
             return {
